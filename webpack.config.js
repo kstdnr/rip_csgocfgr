@@ -1,3 +1,4 @@
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
@@ -33,7 +34,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader!postcss-loader',
+        loader: ExtractTextPlugin.extract(
+          'style-loader',
+          'css-loader?sourceMap!postcss-loader'
+        ),
       }
     ],
   },
@@ -45,6 +49,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': { NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development') }
     }),
+    new ExtractTextPlugin('bundle.css', { allChunks: true }),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false }}),
     new webpack.optimize.AggressiveMergingPlugin(),
